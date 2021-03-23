@@ -7,6 +7,7 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
     {
         static Excel.Workbook workbook;
         static Excel.Application app;
+        static string filepath = Environment.CurrentDirectory + @"\property_pricing.xlsx";
 
         static void Main(string[] args)
         {
@@ -14,7 +15,7 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
             app.Visible = true;
             try
             {
-                workbook = app.Workbooks.Open("property_pricing.xlsx", ReadOnly: false);
+                workbook = app.Workbooks.Open(filepath, ReadOnly: false);
             }
             catch
             {
@@ -89,7 +90,8 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
 
         static void SetUp()
         {
-            // TODO: Implement this method
+            workbook = app.Workbooks.Add();
+            workbook.SaveAs(filepath);
         }
 
         static void AddPropertyToWorksheet(float size, string suburb, string city, float value)
