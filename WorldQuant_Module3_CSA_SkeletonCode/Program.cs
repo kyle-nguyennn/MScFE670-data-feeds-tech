@@ -9,8 +9,11 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
         static Excel.Workbook workbook;
         static Excel.Application app;
         static string[] headers = { "Size", "Suburb", "City", "Market value" };
-        static int nRows = 0;
         static string filepath = Environment.CurrentDirectory + @"\property_pricing.xlsx";
+        static int nRows = 0;
+        static float min = 0;
+        static float max = 0;
+        static float sum = 0;
 
         static void Main(string[] args)
         {
@@ -24,20 +27,7 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
             {
                 SetUp();
             }
-            worksheet = workbook.Worksheets.get_Item(1);
-            // count the number of rows
-            string tempText;
-            do
-            {
-                nRows++;
-                tempText = worksheet.Cells[nRows, 1].Text as string;
-            } while (!string.IsNullOrEmpty(tempText));
-            if (nRows == 1) // set headers
-            {
-                for (int i = 0; i < headers.Length; i++) worksheet.Cells[1, i + 1] = headers[i];
-                nRows++;
-            }
-            workbook.Save();
+            InitState();
             
 
             var input = "";
@@ -112,6 +102,34 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
             // set up headers
             workbook.SaveAs(filepath);
         }
+        static void InitState()
+        {
+            worksheet = workbook.Worksheets.get_Item(1);
+            // count the number of rows
+            string tempText;
+            do
+            {
+                nRows++;
+                tempText = worksheet.Cells[nRows, 1].Text as string;
+            } while (!string.IsNullOrEmpty(tempText));
+            if (nRows == 1) // set headers
+            {
+                for (int i = 0; i < headers.Length; i++) worksheet.Cells[1, i + 1] = headers[i];
+                nRows++;
+            }
+            workbook.Save();
+            // calculate initial stats on price (column 4)
+            for (int row=2; row<nRows; row++)
+            {
+                float price = (float)worksheet.Cells[row, 4].Value;
+                sum += price;
+                min = Math.Min(min, price);
+                max = Math.Max(max, price);
+            }
+            Console.WriteLine($"Current sum: {sum}");
+            Console.WriteLine($"Current min: {min}");
+            Console.WriteLine($"Current max: {max}");
+        }
 
         static void AddPropertyToWorksheet(float size, string suburb, string city, float value)
         {
@@ -120,13 +138,15 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
             worksheet.Cells[nRows, 3] = city;
             worksheet.Cells[nRows, 4] = value;
             nRows++;
+            sum += value;
+            min = Math.Min(min, value);
+            max = Math.Max(max, value);
             workbook.Save();
         }
 
         static float CalculateMean()
         {
-            // TODO: Implement this method
-            return 0.0f;
+            return sum/(nRows - 2);
         }
 
         static float CalculateVariance()
