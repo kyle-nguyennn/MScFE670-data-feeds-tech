@@ -157,14 +157,12 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
 
         static float CalculateMinimum()
         {
-            // TODO: Implement this method
-            return 0.0f;
+            return min;
         }
 
         static float CalculateMaximum()
         {
-            // TODO: Implement this method
-            return 0.0f;
+            return max;
         }
     }
 }
