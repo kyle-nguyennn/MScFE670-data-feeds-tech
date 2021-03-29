@@ -11,6 +11,7 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
         static string[] headers = { "Size", "Suburb", "City", "Market value" };
         static string filepath = Environment.CurrentDirectory + @"\property_pricing.xlsx";
         static int nRows = 0;
+        // keep track of state for easy stats calculations
         static float min = 0;
         static float max = 0;
         static float sum = 0;
@@ -138,6 +139,7 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
             worksheet.Cells[nRows, 3] = city;
             worksheet.Cells[nRows, 4] = value;
             nRows++;
+            // update states
             sum += value;
             min = Math.Min(min, value);
             max = Math.Max(max, value);
@@ -151,8 +153,13 @@ namespace WorldQuant_Module3_CSA_SkeletonCode
 
         static float CalculateVariance()
         {
-            // TODO: Implement this method
-            return 0.0f;
+            float mean = CalculateMean();
+            double ssq = 0;
+            for (int row=2; row<nRows; row++)
+            {
+                ssq += Math.Pow(worksheet.Cells[row, 4].Value - mean, 2);
+            }
+            return (float)ssq/(nRows-2); // number of observations = nRows - 2
         }
 
         static float CalculateMinimum()
